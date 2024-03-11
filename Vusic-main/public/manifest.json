@@ -1,0 +1,9 @@
+{
+  "short_name": "MusicPlayer",
+  "name": "MusicPlayer | The music destination you want.",
+  
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
