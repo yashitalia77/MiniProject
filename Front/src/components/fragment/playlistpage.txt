@@ -1,0 +1,134 @@
+import React, { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import axios from 'axios';
+import '../Pages/css/PlaylistPage.css';
+import AddSong from './AddMusic';
+
+const PlaylistPage = () => {
+    const { id } = useParams();
+    const [playlist, setPlaylist] = useState(null);
+    const [songs, setSongs] = useState([]);
+    const [editPlaylistName, setEditPlaylistName] = useState('');
+    const [isEditing, setIsEditing] = useState(false);
+
+    useEffect(() => {
+        const fetchPlaylist = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/playlists/${id}`);
+                setPlaylist(response.data);
+                setEditPlaylistName(response.data.name); // Set initial playlist name
+            } catch (error) {
+                console.error('Error fetching playlist:', error);
+            }
+        };
+
+        const fetchSongs = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/playlists/${id}/songs`);
+                setSongs(response.data);
+            } catch (error) {
+                console.error('Error fetching songs:', error);
+            }
+        };
+
+        fetchPlaylist();
+        fetchSongs();
+    }, [id]);
+
+    const handleEdit = () => {
+        setIsEditing(true);
+    };
+
+    const handleSaveEdit = async () => {
+        try {
+            await axios.put(`http://localhost:8080/api/playlists/${id}`, {
+                name: editPlaylistName
+            });
+            // Refresh playlist after edit
+            const response = await axios.get(`http://localhost:8080/api/playlists/${id}`);
+            setPlaylist(response.data);
+            setIsEditing(false);
+        } catch (error) {
+            console.error('Error editing playlist:', error);
+        }
+    };
+    
+    const handleSongAdded = async (newSong) => {
+        try {
+            await axios.post(`http://localhost:8080/api/playlists/${id}/songs`, newSong, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            // After adding the song, fetch songs again to reflect the changes
+            const response = await axios.get(`http://localhost:8080/api/playlists/${id}/songs`);
+            setSongs(response.data);
+        } catch (error) {
+            console.error('Error adding song:', error);
+        }
+    };
+    
+    
+    
+
+    const handleDeleteSong = async (songId) => {
+        try {
+            await axios.delete(`http://localhost:8080/api/playlists/${id}/songs/${songId}`);
+            // After deletion, fetch songs again to reflect the changes
+            const response = await axios.get(`http://localhost:8080/api/playlists/${id}/songs`);
+            setSongs(response.data);
+        } catch (error) {
+            console.error('Error deleting song:', error);
+        }
+    };
+
+    if (!playlist) {
+        return <div>Loading...</div>;
+    }
+
+    return (
+        <div className='playlist-page'>
+            <h1>
+                {isEditing ? (
+                    <input
+                        type="text"
+                        value={editPlaylistName}
+                        onChange={(e) => setEditPlaylistName(e.target.value)}
+                    />
+                ) : (
+                    playlist.name
+                )}
+                {!isEditing && (
+                    <button onClick={handleEdit}>Edit</button>
+                )}
+                {isEditing && (
+                    <button onClick={handleSaveEdit}>Save</button>
+                )}
+            </h1>
+            <AddSong playlistId={id} onSongAdded={handleSongAdded}/>
+            <div>
+                <h2>Songs in Playlist:</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Track Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {songs.map((song) => (
+                            <tr key={song.id}>
+                                <td>{song.name}</td>
+                                <td>
+                                    <button onClick={() => handleDeleteSong(song.id)} style={{ backgroundColor: 'red' }}>Delete</button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+};
+
+export default PlaylistPage;
