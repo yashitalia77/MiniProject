@@ -34,7 +34,6 @@ Welcome to our Music Player application! This simple guide will help you get sta
 **Additional Tips:**
 
 - **Playback Controls:** During song playback, you'll find standard playback controls such as play, pause, skip forward, and skip backward.
-- **Repeat and Shuffle:** You can choose to repeat a single song or shuffle your playlist for a random playback order.
-- **Settings:** Explore the settings menu for additional customization options such as theme selection, playback preferences, and more.
+- **Repeat and Shuffle:** You can choose to repeat a single song .
 
-That's it! We hope you enjoy using our Music Player to listen to your favorite tunes and create the perfect playlists for any occasion. If you have any questions or feedback, feel free to reach out to our support team. Happy listening!
+That's it! We hope you enjoy using our Music Player to listen to your favorite tunes and create the perfect playlists for any occasion. Happy listening!
